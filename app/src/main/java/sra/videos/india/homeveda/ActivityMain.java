@@ -10,6 +10,7 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
@@ -42,7 +43,8 @@ import sra.videos.inserservice.SravanService;
  * Created by sravan on 16/07/17.
  */
 
-public class ActivityMain extends AppCompatActivity implements AbsListView.OnScrollListener, AdapterView.OnItemClickListener,
+public class ActivityMain extends AppCompatActivity implements AbsListView.OnScrollListener,
+        AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener {
     private String TAG="ActivityMain";
     private ProgressBar mPbar;
@@ -54,6 +56,7 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
     private String nextPageToken;
     private String channelId="UC74TAQxOYvQDPyGt1klqTqw";
     private boolean isNet = false,isAdded= false;
+    private AppCompatTextView mTvTitle;
 
 
     @Override
@@ -63,11 +66,19 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
         mPbar =(ProgressBar)findViewById(R.id.id_pbar_loading);
         mLv =(ListView)findViewById(R.id.lvthumbnail);
         mCtx= getApplicationContext();
+        mTvTitle =(AppCompatTextView)findViewById(R.id.id_tv_channel_title);
+
         mService = new SravanService(mCtx);
         mLv.setOnScrollListener(this);
         mLv.setOnItemClickListener(this);
         mLv.setOnItemLongClickListener(this);
-        waitAndStart("");
+        if(!AppUtils.isNetAvaliable(mCtx)) {
+            noInternet();
+        }else{
+            waitAndStart("");
+
+        }
+
     }
 
     @Override
@@ -163,6 +174,8 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
     private Handler responseHandler= new Handler() {
 
         public void handleMessage(Message msg) {
+            mPbar.setVisibility(ProgressBar.GONE);
+
             if (msg.what == -1) {
 
             } else
@@ -183,6 +196,11 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
             lsize = mList.size();
             mList = (lib.getVideos());
         }
+
+        if(mList!=null&&mList.size()>0){
+            String channelTitle = mList.get(0).getChannelName();
+            mTvTitle.setText(channelTitle);
+        }
         ThumbNailAdapter adapter = new ThumbNailAdapter(mCtx, mList);
         mLv.setAdapter(adapter);
         mLv.setSelection(sPos);
@@ -198,8 +216,14 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
                 .setMessage(Constants.NET_NOT_MESSAGE);
         alertDialog.setPositiveButton(Constants.CLOSE,
                 new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        if(mService.getCount()>0){
+                            dialog.dismiss();
+                        }else{
+                            finish();
+                        }
+
                     }
                 });
         alertDialog.show();
@@ -212,26 +236,37 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                loadVideos(pageToken);
+                loadVideos(pageToken); // Load in Back ground thread
             }
         };
-        Thread th = new Thread(r);
-        th.start();
+        new Thread(r).start();
     }
 
     private void loadVideos( String pageToken) {
+        Log.v(TAG," loadVideos start ");
 
         try {
+
+            if(!AppUtils.isNetAvaliable(mCtx)){
+
+
+                loadFromDb();
+                Log.v(TAG," Net not avaliable");
+
+                return;
+
+            }
+
             Log.v(TAG," loadVideos:"+pageToken);
-            InputStream inputStream = AppUtils.getStream(channelId,pageToken);
+            InputStream inputStream = AppUtils.getStream(channelId,pageToken); // Net Work operation
+            Reader reader = new InputStreamReader(inputStream); // parsing
             Gson gson = new Gson();
-            Reader reader = new InputStreamReader(inputStream);
-            Tube response = gson.fromJson(reader, Tube.class);
-            SravanService ser = new SravanService(mCtx);
-            ser.insertService(response);
-            totalitem = ser.getTotalResults();
-            nextPageToken = ser.getNextPageToken();
-            List<Video> videos = ser.getVideos();
+            Tube response = gson.fromJson(reader, Tube.class); //parsed
+
+            mService.insertService(response); // Storing data into Db to Cache
+            totalitem = mService.getTotalResults();
+            nextPageToken = mService.getNextPageToken();
+            List<Video> videos = mService.getVideos();
             Library lib = new Library(channelId, videos);
             Bundle data = new Bundle();
             data.putSerializable(Constants.LIBRARY, lib);

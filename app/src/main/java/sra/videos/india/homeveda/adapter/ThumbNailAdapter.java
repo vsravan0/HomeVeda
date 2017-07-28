@@ -89,7 +89,7 @@ public class ThumbNailAdapter extends BaseAdapter {
                 .into(holder.iv);
 
 
-        holder.tv.setTag(video.getRtspUrl());
+        holder.tv.setTag(video.getChannelName());
         holder.iv.setTag(video.getViodeoid());
 
         holder.iv.setContentDescription(video.getUrl());
