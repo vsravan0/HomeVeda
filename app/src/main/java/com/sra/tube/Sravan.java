@@ -35,6 +35,23 @@ public class Sravan implements Serializable {
         url = snippet.getThumbnails().getMedium().getUrl();
     }
 
+
+    public Sravan(EntityPlayList tube, int pos){
+        nextPageToken= tube.getNextPageToken();
+        regionCode = tube.getRegionCode();
+        totalResults = tube.getPageInfo().getTotalResults();
+        resultsPerPage = tube.getPageInfo().getResultsPerPage();
+        EntityPlayListItem item = tube.getItems()[pos];
+        videoId = item.getId();
+        Snippet snippet = item.getSnippet();
+        publishedAt = snippet.getPublishedAt();
+        channelId = snippet.getChannelId();
+        title = snippet.getTitle();
+        description = snippet.getDescription();
+        channelTitle = snippet.getChannelTitle();
+        url = snippet.getThumbnails().getMedium().getUrl();
+    }
+
     public String getNextPageToken() {
         return nextPageToken;
     }

@@ -4,15 +4,23 @@ package com.sra.tube;
  * Created by sravan on 16/07/17.
  */
 
-public class Item {
+public class EntityPlayListItem {
     /*
-  "kind" : youtube#searchResult,
-"etag" : \"m2yskBQFythfE4irbTIeOgYYfBU/Smmj0goWonIUdnwzv7Fy8l-z_ls\",
-"id" : +{ ... },
-"snippet" : +{ ... }
+  "kind":"youtube#playlist",
+"etag":"\"m2yskBQFythfE4irbTIeOgYYfBU/0CbtzVvoNtfNdXD3RwcLX9hCul8\"",
+"id":"PLJQxlT7ibxmELXhlhA79e2Jlic-vXgtkq",
+"snippet":{}
      */
 
-    private Id id;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    private String id;
     private Snippet snippet;
 
 
@@ -24,14 +32,6 @@ public class Item {
                 '}';
     }
 
-
-    public Id getId() {
-        return id;
-    }
-
-    public void setId(Id id) {
-        this.id = id;
-    }
 
     public Snippet getSnippet() {
         return snippet;

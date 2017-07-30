@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Created by sravan on 16/07/17.
  */
 
-public class Tube {
+public class EntityPlayList {
 
     /*
     "kind" : youtube#searchListResponse,
@@ -22,7 +22,7 @@ public class Tube {
     private String nextPageToken;
     private String regionCode;
     private PageInfo pageInfo;
-    private Item items[];
+    private EntityPlayListItem items[];
 
 
     @Override
@@ -39,11 +39,11 @@ public class Tube {
 
 
 
-    public Item[] getItems() {
+    public EntityPlayListItem[] getItems() {
         return items;
     }
 
-    public void setItems(Item[] items) {
+    public void setItems(EntityPlayListItem[] items) {
         this.items = items;
     }
 

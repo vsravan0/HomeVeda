@@ -4,6 +4,7 @@
     <string name="share">share</string>
     <string name="review">review</string>
     <string name="more">moreapps</string>
-    <string  name="help">If you face any problems please clear chache and restart application</string>
-<string name="title">Loading Title...</string>
+    <string name="help">If you face any problems please clear chache and restart application</string>
+    <string name="title">Loading Title...</string>
+    <string name="title_activity_play_lists">ActivityPlayLists</string>
 </resources>

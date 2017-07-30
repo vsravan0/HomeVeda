@@ -58,6 +58,8 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
     private boolean isNet = false,isAdded= false;
     private AppCompatTextView mTvTitle;
 
+    private boolean isPlayList = false;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,7 +80,7 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
             waitAndStart("");
 
         }
-
+//girish12ramesh@gmail.com
     }
 
     @Override
@@ -258,12 +260,12 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
             }
 
             Log.v(TAG," loadVideos:"+pageToken);
-            InputStream inputStream = AppUtils.getStream(channelId,pageToken); // Net Work operation
+            InputStream inputStream = AppUtils.getStream(channelId,pageToken, isPlayList); // Net Work operation
             Reader reader = new InputStreamReader(inputStream); // parsing
             Gson gson = new Gson();
             Tube response = gson.fromJson(reader, Tube.class); //parsed
 
-            mService.insertService(response); // Storing data into Db to Cache
+            mService.insertService(response,null,false); // Storing data into Db to Cache
             totalitem = mService.getTotalResults();
             nextPageToken = mService.getNextPageToken();
             List<Video> videos = mService.getVideos();
