@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import sra.video.india.utils.AppUtils;
+import sra.video.india.utils.Constants;
 import sra.video.india.utils.Video;
 import sra.video.sradb.APPDB;
 import android.content.ContentValues;
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.sra.tube.EntityPlayList;
 import com.sra.tube.Sravan;
 import com.sra.tube.Tube;
 
@@ -34,11 +36,12 @@ public class SravanService {
 	private final String COL_ONE="videoid";
 	private final String COL_TWO="title";
 	private final String COL_THREE="url";
-	private final String COL_FOUR="rtspurl";
+	private final String COL_FOUR="channeltitle";
 	private final String COL_FIVE="thumb";
 	private final String COL_SIX="duration";
 	private final String COL_SEVEN="isfav";
 	private final String TAB_NAME="sravan";
+
 	private String TAG="SravanService";
 	private  int totalResults = 0;
 	private String nextPageToken;
@@ -58,17 +61,31 @@ public class SravanService {
 		return  nextPageToken;
 	}
 
-    public void insertService(Tube tube){
+    public void insertService(Tube tube, EntityPlayList playList, boolean isChannel){
 
         mDb=new APPDB(mCtx);
-        String title = "",url="",rtspUrl= "",videoid= "",duration= "";
+		String tabName="";
+		int len =0;
+
+		if(isChannel){
+			len = playList.getItems().length;
+			tabName= Constants.TAB_PLAY_LIST;
+		}else{
+			 len = tube.getItems().length;
+			tabName=TAB_NAME;
+		}
 
 
-        int len = tube.getItems().length;
+
         for(int i=0;i<len;i++){
+			Sravan s= null;
+			if(isChannel){
+				s= new Sravan(playList,i);
+			}else{
+				s = new Sravan(tube,i);
+			}
 
 
-            Sravan s = new Sravan(tube,i);
 			if(i==0){
 				totalResults = s.getTotalResults();
 				nextPageToken = s.getNextPageToken();
@@ -82,13 +99,10 @@ public class SravanService {
             cv.put(COL_SIX,s.getNextPageToken());
             cv.put(COL_SEVEN,"0");
             try{
-                mDb.inSert(TAB_NAME, COL_ONE,cv);
+                mDb.inSert(tabName, COL_ONE,cv);
             }
             catch (Exception e) {
                 Log.w(TAG," first EXP insertService ");
-                int cc=AppUtils.GetCount(mCtx);
-                cc--;
-                AppUtils.SetCount(mCtx,cc);
             }
             cv.clear();
 
@@ -101,7 +115,8 @@ public class SravanService {
 	
 	public List<Video>  getVideos(){
 		mDb=new APPDB(mCtx);
-		Cursor c=mDb.getResult(" select "+COL_ONE+","+COL_TWO+","+COL_THREE+","+COL_FOUR+","+COL_FIVE+","+COL_SIX+" from "+TAB_NAME+" order by rowid");
+		Cursor c=mDb.getResult(" select "+COL_ONE+","+COL_TWO+","+COL_THREE+","+COL_FOUR+","+COL_FIVE+","+
+				COL_SIX+" from "+TAB_NAME+" order by rowid");
 		List<Video> videos = new ArrayList<Video>();
 		for(int i=0;i<c.getCount();i++){
 			c.moveToPosition(i);
@@ -112,11 +127,30 @@ public class SravanService {
 		APPDB.CloseDataBase();
 		return videos;
 	}
-	
+
+
+
+	public List<Video>  getPlayLists(){
+		mDb=new APPDB(mCtx);
+		Cursor c=mDb.getResult(" select "+COL_ONE+","+COL_TWO+","+COL_THREE+","+COL_FOUR+","+COL_FIVE+","+
+				COL_SIX+" from "+Constants.TAB_PLAY_LIST+" order by rowid");
+		List<Video> videos = new ArrayList<Video>();
+		for(int i=0;i<c.getCount();i++){
+			c.moveToPosition(i);
+			videos.add(new Video(c.getString(1),c.getString(2), c.getString(4), c.getString(3), c.getString(0),c.getString(5)));
+		}
+		c.close();
+		mDb.close();
+		return videos;
+	}
+
+
+
 
 	public List<Video>  getFavVideos(){
 		mDb=new APPDB(mCtx);
-		Cursor c=mDb.getResult(" select "+COL_ONE+","+COL_TWO+","+COL_THREE+","+COL_FOUR+","+COL_FIVE+","+COL_SIX+" from "+TAB_NAME+" where isfav=1 order by rowid ");
+		Cursor c=mDb.getResult(" select "+COL_ONE+","+COL_TWO+","+COL_THREE+","+COL_FOUR+","+COL_FIVE+"," +
+				""+COL_SIX+" from "+TAB_NAME+" where isfav=1 order by rowid ");
 		List<Video> videos = new ArrayList<Video>();
 		for(int i=0;i<c.getCount();i++){
 			c.moveToPosition(i);
@@ -139,6 +173,13 @@ public class SravanService {
 	public int getCount(){
 		APPDB db=new APPDB(mCtx);
 		int count=db.getCount(TAB_NAME);
+		APPDB.CloseDataBase();
+		return count;
+	}
+
+	public int getPlayListCount(){
+		APPDB db=new APPDB(mCtx);
+		int count=db.getCount(Constants.TAB_PLAY_LIST);
 		APPDB.CloseDataBase();
 		return count;
 	}

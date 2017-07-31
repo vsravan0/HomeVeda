@@ -18,13 +18,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
+
+import sra.videos.india.homeveda.ActivityMain;
+import sra.videos.inserservice.SravanService;
 
 public class AppUtils {
 
@@ -93,20 +99,50 @@ https://www.googleapis.com/youtube/v3/search?key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJ
 =UC74TAQxOYvQDPyGt1klqTqw&part=snippet,id&order=date&maxResults=50&pageToken=CFoQAA
 
 
+
+
+https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername={username}&key={YOUR_API_KEY}
+
+https://www.youtube.com/user/homeveda/playlists
+
+https://www.googleapis.com/youtube/v3/channels?part=snippet&forUsername=homeveda&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
+Get Main channel ID from User :
+
+https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=homeveda&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
+Get All Video from Account channel :
+https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId=UCvdBMMIL7hikEGRXDML1l3w&maxResults=25&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
+
 	 HttpGet("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=25&playlistId="
       + string3 + string2 + "&fields=items(snippet/title,snippet/thumbnails,snippet/resourceId),nextPageToken&key="
        + Constants.API_KEY)).getEntity().getContent(), "UTF-8"));
+channelId
 
 
-https://gdata.youtube.com/feeds/api/videos?author=homeveda&v=2&alt=jsonc&max-results=50&start-index=1
+
+
+Get All Playlists
+
+Home Veda :
+https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UCvdBMMIL7hikEGRXDML1l3w
+&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
+Dev :
+
+https://www.googleapis.com/youtube/v3/playlists?maxResults=50&key=
+AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQpart=snippet&channelId=UCvdBMMIL7hikEGRXDML1l3w
+
+https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=UCBkNpeyvBO2TdPGVC_PsPUA&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
 	 */
 
 
 
-	public static InputStream getStream(String channelId, String pageToken) {
+	public static InputStream getStream(String channelId, String pageToken, boolean isChannelList) {
 		try {
-			String surl = getUrl(channelId,pageToken);
-			URL url = new URL(surl);
+			URL url = new URL(getUrl(channelId,pageToken, isChannelList));
 			HttpURLConnection urlConnection = (HttpURLConnection) url
 					.openConnection();
 			urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
@@ -117,14 +153,30 @@ https://gdata.youtube.com/feeds/api/videos?author=homeveda&v=2&alt=jsonc&max-res
 			return null;
 		}
 	}
-private static String TAG="SraAppUtils";
-	private static String getUrl(String channelId, String pageToken){
 
-		String token="";
-		if(pageToken.length()>0){
-			token="&pageToken="+pageToken;
+
+private static String TAG="SraAppUtils";
+	private static String getUrl(String channelId, String pageToken, boolean isChannelList){
+
+
+		String url="";
+		if(isChannelList){
+			/*
+		https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=
+		UCvdBMMIL7hikEGRXDML1l3w&key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ
+
+		 */
+			url=Constants.URL_PLAY_LIST+channelId;
+
+		}else {
+
+			String token = "";
+			if (pageToken.length() > 0) {
+				token = "&pageToken=" + pageToken;
+			}
+			 url = Constants.APP_URL + channelId + "&part=snippet,id&order=date&maxResults=50" + token;
 		}
-		String url=Constants.APP_URL+channelId+"&part=snippet,id&order=date&maxResults=50"+token;
+
 		Log.v(TAG," url:"+url);
 		return  url;
 
@@ -181,11 +233,7 @@ private static String TAG="SraAppUtils";
 		edit.commit();
 	}
 
-	public static int GetCount(Context ctx) {
-		SharedPreferences pref = ctx.getSharedPreferences("sra.videos.india.homeveda", Context.MODE_PRIVATE);
-		return pref.getInt("total", 0);
 
-	}
 	
 	public static void  showToast(Context ctx, String msg){
 		
@@ -216,5 +264,6 @@ private static String TAG="SraAppUtils";
 		return pref.getString(key,"0");
 
 	}
+
 
 }

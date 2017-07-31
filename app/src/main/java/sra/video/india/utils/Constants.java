@@ -36,8 +36,25 @@ public class Constants {
 	public static String APP_TITLE="Home Veda";
 	public static String  NO_FAV="No Favourites Available ";
 	public static final int MENU=101;
+
+
+	public static final String USER_CHANNEL_ID_VEDA="UCvdBMMIL7hikEGRXDML1l3w";
+
+	public static final String BROWSER_DEVELOPER_KEY="AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ";
+
+
+
+	public static  String URL_PLAY_LIST="https://www.googleapis.com/youtube/v3/playlists?maxResults=50&key="
+            +BROWSER_DEVELOPER_KEY +"&part=snippet&channelId=";
 	
-	
+
+    public static final String TAB_PLAY_LIST="playlist";
+
+
+
+
+
+
 	
 
 	

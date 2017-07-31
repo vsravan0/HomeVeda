@@ -18,6 +18,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.util.Log;
 
+import sra.video.india.utils.Constants;
+
 @SuppressLint("NewApi")
 public class APPDB extends SQLiteOpenHelper {
 
@@ -32,76 +34,7 @@ public class APPDB extends SQLiteOpenHelper {
         db=getWritableDatabase();
 	}
 
-	public static void CreateDataBase() throws IOException {
 
-		try {
-			boolean dbExist = checkDataBase();
-			Log.w("dbExist : " + dbExist, "=");
-			if (dbExist) {
-
-			} else {
-
-			
-				try {
-					copyDataBase();
-				} catch (IOException e) {
-					Log.w(" copy ERROR ", e.toString());
-					throw new Error("Error copying database");
-
-				}
-			}
-		} catch (Exception e) {
-			Log.w(" create db  ", e.toString());
-		}
-
-	}
-
-	private static boolean checkDataBase() {
-
-		SQLiteDatabase checkDB = null;
-		try {
-			String myPath = DB_PATH + DB_NAME;
-			checkDB = SQLiteDatabase.openDatabase(myPath, null,
-					SQLiteDatabase.OPEN_READONLY);
-		} catch (SQLiteException e) {
-			Log.w(" ope or create ", e.toString());
-		}
-
-		if (checkDB != null) {
-
-			checkDB.close();
-
-		}
-
-		return checkDB != null ? true : false;
-	}
-
-	private static void copyDataBase() throws IOException {
-
-		InputStream myInput = dbContext.getAssets().open(DB_NAME);
-		String outFileName = DB_PATH + DB_NAME;
-		OutputStream myOutput = new FileOutputStream(outFileName);
-		byte[] buffer = new byte[1024];
-		int length;
-		while ((length = myInput.read(buffer)) > 0) {
-			myOutput.write(buffer, 0, length);
-		}
-
-		myOutput.flush();
-		myOutput.close();
-		myInput.close();
-
-	}
-
-	/*public static void OpenDataBase() throws SQLException {
-		try {
-			String myPath = DB_PATH + DB_NAME;
-			db = SQLiteDatabase.openDatabase(myPath, null,
-					SQLiteDatabase.OPEN_READWRITE);
-		} catch (Exception e) {
-			Log.w(" open db ", " ope db ");
-		}
-	} */
 
 	public static Cursor ExecuteRawQuerry(String querry, String[] selectionArgs)
 			throws SQLException {
@@ -185,9 +118,15 @@ public class APPDB extends SQLiteOpenHelper {
 		 */
 
 		db.execSQL("create TABLE IF NOT EXISTS sravan ( videoid text ,title text" +
-				" , url text ,rtspurl  text , thumb text ,duration text ,isfav integer" +
+				" , url text ,channeltitle  text , thumb text ,duration text ,isfav integer" +
 				"  , sra2 text ,sra3 text )");
-	}
+
+
+        db.execSQL("create TABLE IF NOT EXISTS "+Constants.TAB_PLAY_LIST+" ( videoid text ,title text" +
+                " , url text ,channeltitle  text , thumb text ,duration text ,isfav integer" +
+                "  , sra2 text ,sra3 text )");
+
+    }
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

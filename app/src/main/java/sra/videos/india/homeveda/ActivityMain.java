@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.google.gson.Gson;
@@ -54,17 +55,22 @@ public class ActivityMain extends AppCompatActivity implements AbsListView.OnScr
     private int totalitem = 0;
     private int visbCount=0;
     private String nextPageToken;
-    private String channelId="UC74TAQxOYvQDPyGt1klqTqw";
+    private String channelId="";
     private boolean isNet = false,isAdded= false;
     private AppCompatTextView mTvTitle;
 
     private boolean isPlayList = false;
 
-
+    private Intent intent = null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        intent= getIntent();
+        channelId=intent.getStringExtra(Constants.APP_NAME);
+        Toast.makeText(getApplicationContext()," Channel ID "+channelId,Toast.LENGTH_LONG).show();
+
+
         mPbar =(ProgressBar)findViewById(R.id.id_pbar_loading);
         mLv =(ListView)findViewById(R.id.lvthumbnail);
         mCtx= getApplicationContext();

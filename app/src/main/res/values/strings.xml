@@ -7,4 +7,8 @@
     <string name="help">If you face any problems please clear chache and restart application</string>
     <string name="title">Loading Title...</string>
     <string name="title_activity_play_lists">ActivityPlayLists</string>
+
+    <string name="title_activity_splash_screen">ActivitySplashScreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
