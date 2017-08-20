@@ -3,7 +3,8 @@ package sra.video.india.utils;
 public class Constants {
 
 	
-	public static final String APP_URL="https://www.googleapis.com/youtube/v3/search?key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ&channelId=";
+	public static final String APP_URL="https://www.googleapis.com/youtube/v3/search?" +
+			"key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ&channelId=";
 
 
 	//public static  final String AUR_USERNAME="homeveda";

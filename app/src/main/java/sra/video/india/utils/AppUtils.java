@@ -174,6 +174,15 @@ private static String TAG="SraAppUtils";
 			if (pageToken.length() > 0) {
 				token = "&pageToken=" + pageToken;
 			}
+			/*
+			https://www.googleapis.com/youtube/v3/search?key=AIzaSyDkpWLe_b2u61zC4j4CYzlqVYJvq6XDCuQ&channelId
+=UC74TAQxOYvQDPyGt1klqTqw&part=snippet,id&order=date&maxResults=50&pageToken=CFoQAA
+
+
+
+https://www.googleapis.com/youtube/v3/search?key=AIzaSyDkpWL
+e_b2u61zC4j4CYzlqVYJvq6XDCuQ&channelId=PLJQxlT7ibxmGvTiRM1R-vF59LtOOHn556&part=snippet,id&order=date&maxResults=50
+			 */
 			 url = Constants.APP_URL + channelId + "&part=snippet,id&order=date&maxResults=50" + token;
 		}
 
